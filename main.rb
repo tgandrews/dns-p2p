@@ -20,12 +20,12 @@ optparse = OptionParser.new do |opts|
 	end
 
 	options[:local_ip] = '0.0.0.0'
-	opts.on('-l', '--local', 'The local IPv4 IP to run the server on') do |val|
+	opts.on('-l', '--local', 'The local IPv4 IP to run the server on, defaults to 0.0.0.0') do |val|
 		options[:local_ip] = val.to_s
 	end
 
 	options[:dns_ip] = '8.8.8.8'
-	opts.on('-d', '--dns', 'The IP location of the DNS server to forward all other requests') do |val|
+	opts.on('-d', '--dns', 'The IP location of the DNS server to forward all other requests, defaults to 8.8.8.8 (Google)') do |val|
 		options[:dns_ip] = val.to_s
 	end
 end
@@ -49,6 +49,7 @@ module P2PDNS
 		sock.connect "8.8.8.8", 53
 		sock.send data, 0
 		ans = sock.recvfrom 1024
+		sock.close
 
 		response =  Net::DNS::Packet::parse(ans)
 		p response
