@@ -1,11 +1,7 @@
 require 'rubygems'
 require 'optparse'
 require 'eventmachine'
-#require 'server'
-require 'socket'
-require 'net/dns/packet'
-require 'net/dns/resolver'
-require 'net/dns/question'
+require 'ppdns.rb'
 
 options = {}
 optparse = OptionParser.new do |opts|
@@ -36,30 +32,6 @@ if options[:verbose] = true then
 	puts "Binding to #{options[:local_ip]}:#{options[:port].to_s}"
 end
 
-module P2PDNS
-	def post_init
-		puts 'connected'
-	end
-
-	def receive_data(data)
-		original_packet = Net::DNS::Packet::parse(data)
-		p original_packet
-
-		sock = UDPSocket.new
-		sock.connect "8.8.8.8", 53
-		sock.send data, 0
-		ans = sock.recvfrom 1024
-		sock.close
-
-		response =  Net::DNS::Packet::parse(ans)
-		p response
-		return ans
-	end
-
-	def unbind
-		puts 'disconnected'
-	end
-end
 
 
 EM.run do
