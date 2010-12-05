@@ -1,39 +1,42 @@
 require 'rubygems'
 require 'eventmachine'
 require 'net/dns/packet'
-#require 'externaldns.rb'
 require 'socket'
+require_relative 'options'
 
 class P2PDNS < EventMachine::Connection
-	def initalize(*args)
-		super
-
-		puts args[:server_ip].to_s
-	end
-
 	def post_init
-		puts 'connected'
+		@options = Options.instance
+		if @options.verbose == true
+			puts 'connected'
+		end
 	end
 
 	def receive_data(data)
 		original_packet = Net::DNS::Packet::parse(data)
-		puts 'Question:'
-		p original_packet.question
+		if @options.verbose == true
+			puts 'Question:'
+			p original_packet.question
+		end
 
-		sock = UDPSocket.new
-		sock.connect '8.8.8.8', 53
+		sock = UDPSocket.open
+		sock.do_not_reverse_lookup = true
+		sock.connect @options.dns_ip, 53
 		sock.send data, 0
 		answer = sock.recv 4096
-		sock.close
 
 		answer_parsed = Net::DNS::Packet::parse(answer)
-		puts 'Answer:'
-		p answer_parsed.answer
+		if @options.verbose == true
+			puts 'Answer:'
+			p answer_parsed.answer
+		end
 
 		send_data answer
 	end
 
 	def unbind
-		puts 'disconnected'
+		if @options.verbose == true
+			puts 'disconnected'
+		end
 	end
 end
