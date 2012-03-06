@@ -24,6 +24,7 @@ class P2PDNS < EventMachine::Connection
 		sock.connect @options.dns_ip, 53
 		sock.send data, 0
 		answer = sock.recv 4096
+		sock.close
 
 		answer_parsed = Net::DNS::Packet::parse(answer)
 		if @options.verbose == true

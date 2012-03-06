@@ -1,8 +1,10 @@
 require 'rubygems'
 require 'socket'
 
-host = '0.0.0.0'
+host = '127.0.0.1'
 port = '53'
+
+puts host + ':' + port
 
 puts 'Creating TCP connection'
 conn = TCPSocket.open(host, port)
